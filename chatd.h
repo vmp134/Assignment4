@@ -18,12 +18,18 @@ typedef enum {
     ERR
 } MessageType;
 
-//1 is added to account for \0
+//Notes on the following:
+/*
+ * +1 is added to account for \0
+ * state is meant to be from
+ *  - 0, waiting for name
+ *  - 1, logged in
+ */
 typedef struct {
     int client_fd;
     char name[NAME_MAX + 1];
     char status[STATUS_MAX + 1];
-    int state;
+    int state; 
 } Client;
 
 typedef struct {

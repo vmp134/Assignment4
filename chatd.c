@@ -53,7 +53,7 @@ int main(int argc, char **argv) {
     /*
      * We set while(1) so the server runs indefinitely
      * We check to see if there are any "ready" fds after polling
-     * 
+     * If people have joined (POLLIN), and we have open spots, we add them to fds
      */
     while(1) {
         if ((ready = poll(fds, nfds, -1)) < 0) {
@@ -61,13 +61,21 @@ int main(int argc, char **argv) {
             return EXIT_FAILURE;
         }
         if (fds[0].revents & POLLIN) {
-            int new_fd = accept(server_fd, (struct sockaddr*)&address, address_length);
-            fds[nfds].fd = new_fd;
-            fds[nfds].events = POLLIN;
-            client[nfds-1].client_fd = new_fd;
+            if (nfds < SOMAXCONN + 1) {            
+                int new_fd = accept(server_fd, (struct sockaddr*)&address, &address_length);
+                if (new_fd >= 0) {                
+                    fds[nfds].fd = new_fd;
+                    fds[nfds].events = POLLIN;
 
-            nfds++;
+                    client[nfds-1].client_fd = new_fd;
+                    memset(client[nfds-1].name, 0, NAME_MAX + 1);
+                    memset(client[nfds-1].status, 0, STATUS_MAX + 1);                    
+                    client[nfds-1].state = 0;
 
+
+                    nfds++;
+                }
+            }
         }
     }
 

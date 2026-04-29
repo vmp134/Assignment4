@@ -6,9 +6,9 @@ int main(int argc, char **argv) {
     /*
      * We initialize variables after checking args
      * The program should only have one arg: the port no.
-     * We also setup fd for the server
      * We also setup sockaddr_in struct for ipv4
-     * We 
+     * We also setup our array of poll fds for people connected to the server
+     * We also setup our clients array
      */
     if (argc != 2) {
         fprintf(stderr, "Error: Incorrect # of Arguments\n");
@@ -21,12 +21,13 @@ int main(int argc, char **argv) {
     address.sin_family = AF_INET;
     address.sin_port = htons(port);
     address.sin_addr.s_addr = INADDR_ANY;
+    socklen_t address_length = sizeof(address);
 
     Client client[SOMAXCONN];
-    int current_client = 0;
-
     struct pollfd fds[SOMAXCONN + 1]; 
-    int nfds = 0;   //Number of fds, as poll() takes nfds as 2nd arg
+    int nfds = 1;   //Number of fds, as poll() takes nfds as 2nd arg
+    fds[0].events = POLLIN;
+    int ready = 0;  //Number of ready fds
 
     //Server Setup
     /*
@@ -36,7 +37,7 @@ int main(int argc, char **argv) {
         perror("Socket");
         return EXIT_FAILURE;
     }
-    if (bind(server_fd, (struct sockaddr*)&address, sizeof(address)) < 0) {
+    if (bind(server_fd, (struct sockaddr*)&address, address_length) < 0) {
         perror("Bind");
         return EXIT_FAILURE;
     }
@@ -45,21 +46,29 @@ int main(int argc, char **argv) {
         return EXIT_FAILURE;
     }
 
+    fds[0].fd = server_fd;
+    
+
     //Accept Loop
     /*
-     * 
-     * 
+     * We set while(1) so the server runs indefinitely
+     * We check to see if there are any "ready" fds after polling
      * 
      */
     while(1) {
-        poll(fds, nfds, -1);
-
-        if ((client[current_client].client_fd = accept(server_fd, (struct sockaddr*)&address, sizeof(address))) < 0) {
-            perror("Accept");
+        if ((ready = poll(fds, nfds, -1)) < 0) {
+            perror("Poll");
             return EXIT_FAILURE;
         }
+        if (fds[0].revents & POLLIN) {
+            int new_fd = accept(server_fd, (struct sockaddr*)&address, address_length);
+            fds[nfds].fd = new_fd;
+            fds[nfds].events = POLLIN;
+            client[nfds-1].client_fd = new_fd;
 
-        current_client++;
+            nfds++;
+
+        }
     }
 
 

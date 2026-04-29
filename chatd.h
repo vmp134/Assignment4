@@ -18,7 +18,7 @@ typedef enum {
     ERR
 } MessageType;
 
-//Notes on the following:
+//Notes on the following two:
 /*
  * +1 is added to account for \0
  * state is meant to be from
@@ -39,3 +39,15 @@ typedef struct {
     int length;
     MessageType type;
 } Message;
+
+struct Node {
+    Client client;
+    struct Node *next;
+};
+
+//clientList.c
+struct Node* create(int fd);
+void addNode(int fd, struct Node** head);
+void destroy(struct Node *node);
+void destroyFD(int fd, struct Node** head);
+struct Node* findName(char *name, struct Node** head);

@@ -7,7 +7,8 @@ int main(int argc, char **argv) {
      * We initialize variables after checking args
      * The program should only have one arg: the port no.
      * We also setup fd for the server
-     * We also setup the sockaddr_in struct for ipv4
+     * We also setup sockaddr_in struct for ipv4
+     * We 
      */
     if (argc != 2) {
         fprintf(stderr, "Error: Incorrect # of Arguments\n");
@@ -16,15 +17,16 @@ int main(int argc, char **argv) {
     int port = atoi(argv[1]);
     int server_fd;
 
-    Client client[SOMAXCONN];
-    int current_client = 0;
-
     struct sockaddr_in address;
     address.sin_family = AF_INET;
     address.sin_port = htons(port);
     address.sin_addr.s_addr = INADDR_ANY;
 
+    Client client[SOMAXCONN];
+    int current_client = 0;
+
     struct pollfd fds[SOMAXCONN + 1]; 
+    int nfds = 0;   //Number of fds, as poll() takes nfds as 2nd arg
 
     //Server Setup
     /*
@@ -50,7 +52,7 @@ int main(int argc, char **argv) {
      * 
      */
     while(1) {
-
+        poll(fds, nfds, -1);
 
         if ((client[current_client].client_fd = accept(server_fd, (struct sockaddr*)&address, sizeof(address))) < 0) {
             perror("Accept");

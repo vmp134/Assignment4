@@ -21,15 +21,15 @@ typedef enum {
 //1 is added to account for \0
 typedef struct {
     int client_fd;
-    char* name[NAME_MAX + 1];
-    char* status[STATUS_MAX + 1];
+    char name[NAME_MAX + 1];
+    char status[STATUS_MAX + 1];
     int state;
 } Client;
 
 typedef struct {
-    Client sender;
-    Client receiver;
-    char* content[MESSAGE_MAX + 1];
+    char sender[NAME_MAX + 1];
+    char receiver[NAME_MAX + 1];
+    char content[MESSAGE_MAX + 1];
     int length;
     MessageType type;
 } Message;

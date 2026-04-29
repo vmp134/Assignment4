@@ -24,6 +24,8 @@ int main(int argc, char **argv) {
     address.sin_port = htons(port);
     address.sin_addr.s_addr = INADDR_ANY;
 
+    struct pollfd fds[SOMAXCONN + 1]; 
+
     //Server Setup
     /*
      * We setup the socket, bind, then listen 
@@ -48,6 +50,8 @@ int main(int argc, char **argv) {
      * 
      */
     while(1) {
+
+
         if ((client[current_client].client_fd = accept(server_fd, (struct sockaddr*)&address, sizeof(address))) < 0) {
             perror("Accept");
             return EXIT_FAILURE;

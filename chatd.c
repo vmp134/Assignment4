@@ -2,13 +2,15 @@
 
 int main(int argc, char **argv) {
     
-    //Setup
+    //Initial Setup
     /*
      * We initialize variables after checking args
      * The program should only have one arg: the port no.
      * We also setup sockaddr_in struct for ipv4
      * We also setup our array of poll fds for people connected to the server
-     * We also setup our clients array
+     * We set fd to server_fd, and setup our linkedlist of clients
+     * This makes for easy add/removal of clients, and unbounded amount
+     * Better compared to declared array or dynamic array, due to sorting/shifting overhead
      */
     if (argc != 2) {
         fprintf(stderr, "Error: Incorrect # of Arguments\n");
@@ -23,11 +25,13 @@ int main(int argc, char **argv) {
     address.sin_addr.s_addr = INADDR_ANY;
     socklen_t address_length = sizeof(address);
 
-    Client client[SOMAXCONN];
     struct pollfd fds[SOMAXCONN + 1]; 
     int nfds = 1;   //Number of fds, as poll() takes nfds as 2nd arg
     fds[0].events = POLLIN;
+    fds[0].fd = server_fd;
     int ready = 0;  //Number of ready fds
+
+    struct Node* head = NULL;
 
     //Server Setup
     /*
@@ -45,9 +49,6 @@ int main(int argc, char **argv) {
         perror("Listen");
         return EXIT_FAILURE;
     }
-
-    fds[0].fd = server_fd;
-    
 
     //Accept Loop
     /*
@@ -67,12 +68,8 @@ int main(int argc, char **argv) {
                     fds[nfds].fd = new_fd;
                     fds[nfds].events = POLLIN;
 
-                    client[nfds-1].client_fd = new_fd;
-                    memset(client[nfds-1].name, 0, NAME_MAX + 1);
-                    memset(client[nfds-1].status, 0, STATUS_MAX + 1);                    
-                    client[nfds-1].state = 0;
-
-
+                    addNode(new_fd, &head);
+                    
                     nfds++;
                 }
             }

@@ -26,10 +26,7 @@ int main(int argc, char **argv) {
     socklen_t address_length = sizeof(address);
 
     struct pollfd fds[SOMAXCONN + 1]; 
-    int nfds = 1;   //Number of fds, as poll() takes nfds as 2nd arg
-    fds[0].events = POLLIN;
-    fds[0].fd = server_fd;
-    int ready = 0;  //Number of ready fds
+    int ready = 0; 
 
     struct Node* head = NULL;
 
@@ -57,6 +54,19 @@ int main(int argc, char **argv) {
      * If people have joined (POLLIN), and we have open spots, we add them to fds
      */
     while(1) {
+        int nfds = 1;   
+        fds[0].events = POLLIN;
+        fds[0].fd = server_fd;
+
+        //This avoids array shifting when disconnect
+        struct Node* curr = head;
+        while (curr != NULL) {
+            fds[nfds].fd = curr->client.client_fd;
+            fds[nfds].events = POLLIN;
+            nfds++;
+            curr = curr->next;
+        }
+
         if ((ready = poll(fds, nfds, -1)) < 0) {
             perror("Poll");
             return EXIT_FAILURE;
@@ -69,7 +79,7 @@ int main(int argc, char **argv) {
                     fds[nfds].events = POLLIN;
 
                     addNode(new_fd, &head);
-                    
+
                     nfds++;
                 }
             }

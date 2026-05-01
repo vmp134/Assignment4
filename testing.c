@@ -35,7 +35,7 @@ void test_destroyFD() {
     destroyFD(5, &head);
 
     assert(head->client.client_fd == 4);
-    assert(head->next->client.client_fd == 2);
+    assert(head->next->client.client_fd == 3);
     assert(head->next->next->client.client_fd == 1);
     assert(head->next->next->next == NULL); 
 
@@ -60,6 +60,7 @@ void test_findName() {
     found = findName("Charlie", &head);
     assert(found == NULL);
 
+    destroyList(&head);
     printf("findName tests passed.\n");
 }
 

@@ -1,11 +1,15 @@
 CC     = gcc
 CFLAGS = -Wall -Wextra -g
 
-SRCS = clientList.c
+SRCS = clientList.c 
 OBJS = $(SRCS:.c=.o)
 
 MAIN_SRC = chatd.c 
 TEST_SRC = testing.c
+
+.PHONY: all clean test
+
+all: chatd
 
 chatd: $(MAIN_SRC:.c=.o) $(OBJS)
 	$(CC) $(CFLAGS) -o $@ $^

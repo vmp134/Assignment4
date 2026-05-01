@@ -5,6 +5,12 @@
 #define READ_FATAL -1
 #define READ_TOO_LONG -2
 
+volatile sig_atomic_t running = 1;
+
+void handle_sigint(int sig) {
+    running = 0;
+}
+
 static const char *typeString(MessageType type) {
   switch (type) {
   case NAM:
@@ -557,6 +563,7 @@ int main(int argc, char **argv) {
    * We also setup sockaddr_in struct for ipv4
    * We also setup our array of poll fds for people connected to the server
    * We also setup our clients array
+   * We also take care of signal handling for when the server shuts down
    */
   if (argc != 2) {
     fprintf(stderr, "Error: Incorrect # of Arguments\n");
@@ -577,6 +584,8 @@ int main(int argc, char **argv) {
   struct pollfd fds[SOMAXCONN + 1];
   int nfds = 1;  // Number of fds, as poll() takes nfds as 2nd arg
   int ready = 0; // Number of ready fds
+
+  signal(SIGINT, handle_sigint);
 
   memset(client, 0, sizeof(client));
   memset(fds, 0, sizeof(fds));
@@ -611,7 +620,7 @@ int main(int argc, char **argv) {
    * We check to see if there are any "ready" fds after polling
    * If people have joined (POLLIN), and we have open spots, we add them to fds
    */
-  while (1) {
+  while (running) {
     ready = poll(fds, nfds, -1);
     if (ready < 0) {
       if (errno == EINTR)
@@ -685,7 +694,11 @@ int main(int argc, char **argv) {
       }
     }
   }
-
+  
+  printf("Shutting down...\n");
+    for (int i = 0; i < nfds; i++) {
+        close(fds[i].fd);
+    }
   return EXIT_SUCCESS;
 }
 

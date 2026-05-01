@@ -7,6 +7,7 @@
 #include <string.h>
 #include <sys/socket.h>
 #include <unistd.h>
+#include <signal.h>
 
 #define NAME_MAX 32
 #define STATUS_MAX 64
@@ -45,10 +46,3 @@ struct Node {
   struct Node *next;
 };
 
-// clientList.c
-struct Node *create(int fd);
-void addNode(int fd, struct Node **head);
-void destroy(struct Node *node);
-void destroyFD(int fd, struct Node **head);
-struct Node *findName(char *name, struct Node **head);
-void destroyList(struct Node** head);

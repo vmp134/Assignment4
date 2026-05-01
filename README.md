@@ -3,8 +3,6 @@
     - Victor Peng (vmp134)
 
 2. Testing Plan
-    - Unit Tests (testing.c)
-        - 
     - Integration Tests (./chatd and ./raw)
         - 
     
@@ -22,5 +20,7 @@
             - Avoid shifting whenever a client disconnects
     - Message Handling
         - 
-    - Memory Handling
+    - Shutdown Handling
+        - 
+    - Error handling
         - 

@@ -24,8 +24,9 @@ void destroy(struct Node* node) {
 }
 
 void destroyFD(int fd, struct Node** head) {
-    struct Node* prev;
+    struct Node* prev = NULL;
     struct Node* curr = *head;
+
     while (curr != NULL) {
         if (curr->client.client_fd == fd) {
             if (prev == NULL) {
@@ -43,10 +44,23 @@ void destroyFD(int fd, struct Node** head) {
 
 struct Node* findName(char *name, struct Node** head) {
     struct Node* curr = *head;
+
     while (curr != NULL) {
         if (strcmp(curr->client.name, name) == 0)
             return curr;
         curr = curr->next;
     }
     return NULL;
+}
+
+void destroyList(struct Node** head) {
+    struct Node* curr = *head;
+    struct Node* next;
+
+    while (curr != NULL) {
+        next = curr->next;
+        destroy(curr);
+        curr = next;
+    }
+    *head = NULL;
 }

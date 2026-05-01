@@ -2,10 +2,10 @@
 #include <assert.h>
 
 void test_create() {
-    struct Node* head = create(1);
+    struct Node* head = create(3);
     
     assert(head->next == NULL);
-    assert(head->client.client_fd == 1);
+    assert(head->client.client_fd == 3);
     assert(head->client.state == 0);
     assert(head->client.name[0] == '\0');
     assert(head->client.status[0] == '\0');    
@@ -15,47 +15,47 @@ void test_create() {
 }
 
 void test_addNode() {
-    struct Node* head = create(1);
-    addNode(2, &head);
+    struct Node* head = create(3);
+    addNode(4, &head);
 
-    assert(head->client.client_fd == 2);
+    assert(head->client.client_fd == 4);
     assert(head->next->next == NULL);
-    assert(head->next->client.client_fd == 1);
+    assert(head->next->client.client_fd == 3);
 
     destroyList(&head);
     printf("addNode tests passed.\n");
 }
 
 void test_destroyFD() {
-    struct Node* head = create(1);
-    for (int i = 2; i < 6; i++) {
+    struct Node* head = create(3);
+    for (int i = 4; i < 9; i++) {
         addNode(i, &head);
     }
-    destroyFD(2, &head);
-    destroyFD(5, &head);
+    destroyFD(4, &head);
+    destroyFD(7, &head);
 
-    assert(head->client.client_fd == 4);
-    assert(head->next->client.client_fd == 3);
-    assert(head->next->next->client.client_fd == 1);
-    assert(head->next->next->next == NULL); 
+    assert(head->client.client_fd == 8);
+    assert(head->next->client.client_fd == 6);
+    assert(head->next->next->client.client_fd == 5);
+    assert(head->next->next->next->next == NULL); 
 
     destroyList(&head);
     printf("destroyFD tests passed.\n");
 }
 
 void test_findName() {
-    struct Node* head = create(1);
-    addNode(2, &head);
+    struct Node* head = create(3);
+    addNode(4, &head);
     strcpy(head->client.name, "Alice");       
     strcpy(head->next->client.name, "Bob");   
 
     struct Node* found = findName("Alice", &head);
     assert(found != NULL);
-    assert(found->client.client_fd == 2);
+    assert(found->client.client_fd == 4);
 
     found = findName("Bob", &head);
     assert(found != NULL);
-    assert(found->client.client_fd == 1);
+    assert(found->client.client_fd == 3);
 
     found = findName("Charlie", &head);
     assert(found == NULL);
@@ -65,8 +65,8 @@ void test_findName() {
 }
 
 void test_destroyList() {
-    struct Node* head = create(1);
-    for (int i = 2; i < 6; i++) {
+    struct Node* head = create(3);
+    for (int i = 4; i < 9; i++) {
         addNode(i, &head);
     }
     destroyList(&head);

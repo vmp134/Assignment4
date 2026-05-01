@@ -49,3 +49,15 @@ struct Node *findName(char *name, struct Node **head) {
   }
   return NULL;
 }
+
+void destroyList(struct Node** head) {
+    struct Node* curr = *head;
+    struct Node* next;
+
+    while (curr != NULL) {
+        next = curr->next;
+        destroy(curr);
+        curr = next;
+    }
+    *head = NULL;
+}

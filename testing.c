@@ -10,7 +10,7 @@ void test_create() {
     assert(head->client.name[0] == '\0');
     assert(head->client.status[0] == '\0');    
 
-    destroy(&head);
+    destroy(head);
     printf("create tests passed.\n");
 }
 
@@ -24,15 +24,6 @@ void test_addNode() {
 
     destroyList(&head);
     printf("addNode tests passed.\n");
-}
-
-void test_destroy() {
-    struct Node* head = create(3);
-    destroy(&head);
-
-    assert(head == NULL);
-
-    printf("destroy tests passed.\n");
 }
 
 void test_destroyFD() {
@@ -85,12 +76,9 @@ void test_destroyList() {
     printf("destroyList tests passed.\n");
 }
 
-
-
 int main() {
     test_create();
     test_addNode();
-    test_destroy();
     test_destroyFD();
     test_findName();
     test_destroyList();

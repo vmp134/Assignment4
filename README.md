@@ -4,7 +4,9 @@
 
 2. Testing Plan
     - Unit Tests (testing.c)
-    - Integration Tests (./chatd)
+        - 
+    - Integration Tests (./chatd and ./raw)
+        - 
     
 3. Design Plan
     - Clients and Polling
@@ -19,4 +21,6 @@
             - If we delete a node, it simply does not show up
             - Avoid shifting whenever a client disconnects
     - Message Handling
+        - 
+    - Memory Handling
         - 

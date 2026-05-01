@@ -8,7 +8,8 @@
 volatile sig_atomic_t running = 1;
 
 void handle_sigint(int sig) {
-    running = 0;
+  (void)sig;
+  running = 0;
 }
 
 static const char *typeString(MessageType type) {
@@ -68,6 +69,14 @@ static int readField(int fd, char *buffer, size_t size) {
 
   if (size == 0)
     return READ_FATAL;
+
+  while (1) {
+    ssize_t amount = readByte(fd, &ch);
+    if (amount <= 0) return (amount == 0) ? READ_CLOSED : READ_FATAL;
+    if (ch != '\n' && ch != '\r' && ch != ' ') break; 
+  }
+
+  buffer[i++] = ch;
 
   while (1) {
     ssize_t amount = readByte(fd, &ch);
@@ -586,6 +595,7 @@ int main(int argc, char **argv) {
   int ready = 0; // Number of ready fds
 
   signal(SIGINT, handle_sigint);
+  signal(SIGTERM, handle_sigint);
 
   memset(client, 0, sizeof(client));
   memset(fds, 0, sizeof(fds));

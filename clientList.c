@@ -18,9 +18,10 @@ void addNode(int fd, struct Node** head) {
     *head = temp;
 }
 
-void destroy(struct Node* node) {
-    close(node->client.client_fd);
-    free(node);
+void destroy(struct Node** node) {
+    close((*node)->client.client_fd);
+    free(*node);
+    *node = NULL;
 }
 
 void destroyFD(int fd, struct Node** head) {
@@ -34,7 +35,7 @@ void destroyFD(int fd, struct Node** head) {
             }
             else
                 prev->next = curr->next;
-            destroy(curr);
+            destroy(&curr);
             return;
         }
         prev = curr;
@@ -59,7 +60,7 @@ void destroyList(struct Node** head) {
 
     while (curr != NULL) {
         next = curr->next;
-        destroy(curr);
+        destroy(&curr);
         curr = next;
     }
     *head = NULL;
